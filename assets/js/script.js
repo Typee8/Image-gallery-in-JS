@@ -144,9 +144,13 @@ const onImageNext = function (event) {
   const figureNext = figureCurrent.nextElementSibling;
 
   if (!figureNext) {
-    return null;
+    const imgFirst = this.querySelector(
+      ".js-slider__thumbs"
+    ).children[1].querySelector(".js-slider__thumbs-image");
+    changeImgToCurrent(this, imgFirst);
   } else {
-    changeImgToCurrent(figureNext, this);
+    const imgNext = figureNext.querySelector(".js-slider__thumbs-image");
+    changeImgToCurrent(this, imgNext);
   }
 };
 
@@ -172,9 +176,13 @@ const onImagePrev = function (event) {
       .getAttribute("class")
       .includes("js-slider__thumbs-item--prototype")
   ) {
-    return null;
+    const imgLast = this.querySelector(
+      ".js-slider__thumbs"
+    ).lastElementChild.querySelector(".js-slider__thumbs-image");
+    changeImgToCurrent(this, imgLast);
   } else {
-    changeImgToCurrent(figurePrev, this);
+    const imgPrev = figurePrev.querySelector(".js-slider__thumbs-image");
+    changeImgToCurrent(this, imgPrev);
   }
 };
 
@@ -189,13 +197,12 @@ const onClose = function (event) {
   }
 };
 
-function changeImgToCurrent(nextFigure, currentTarget) {
-  const imgNext = nextFigure.querySelector(".js-slider__thumbs-image");
+function changeImgToCurrent(currentTarget, newCurrentImg) {
   const imgCurrent = currentTarget.querySelector(
     ".js-slider__thumbs-image--current"
   );
   imgCurrent.classList.remove("js-slider__thumbs-image--current");
-  imgNext.classList.add("js-slider__thumbs-image--current");
+  newCurrentImg.classList.add("js-slider__thumbs-image--current");
   const imgNextPlace = currentTarget.querySelector(".js-slider__image");
-  imgNextPlace.src = imgNext.src;
+  imgNextPlace.src = newCurrentImg.src;
 }
