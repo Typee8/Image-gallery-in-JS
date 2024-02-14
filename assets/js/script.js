@@ -56,8 +56,8 @@ const initEvents = function (imagesList, sliderRootElement) {
     }
   });
   zoom.addEventListener("click", () => {
-      fireCustomEvent(sliderRootElement, "slide-stop");
-    });
+    fireCustomEvent(sliderRootElement, "slide-stop");
+  });
 };
 
 const fireCustomEvent = function (element, name) {
@@ -100,51 +100,6 @@ const onImageClick = function (event, sliderRootElement, imagesSelector) {
   sliderRootElement.classList.add("js-slider--active");
   showZommedImg(event, sliderRootElement);
   showSliderThumbsItems(event, sliderRootElement, imagesSelector);
-
-  function showZommedImg(event, sliderRootElement) {
-    const imgSrc = event.currentTarget.querySelector(`.gallery__image`).src;
-    const imgPlace = sliderRootElement.querySelector(".js-slider__image");
-    imgPlace.src = imgSrc;
-  }
-
-  function showSliderThumbsItems(event, sliderRootElement, imagesSelector) {
-    const sliderThumbs = sliderRootElement.querySelector(".js-slider__thumbs");
-    const thumbsItemTemplate = createthumbsItemTemplate(sliderRootElement);
-    const imgSrc = event.currentTarget.querySelector(`.gallery__image`).src;
-    const imgGroup = event.currentTarget.dataset.sliderGroupName;
-    const imagesList = Array.from(document.querySelectorAll(imagesSelector));
-
-    for (let ele of imagesList) {
-      if (ele.dataset.sliderGroupName === imgGroup) {
-        const clonedTemplate = thumbsItemTemplate.cloneNode(true);
-        const thumbsImage = clonedTemplate.querySelector(
-          ".js-slider__thumbs-image"
-        );
-        const eleImgSrc = ele
-          .querySelector(".gallery__image")
-          .getAttribute("src");
-        thumbsImage.src = eleImgSrc;
-
-        if (thumbsImage.src === imgSrc) {
-          thumbsImage.classList.add("js-slider__thumbs-image--current");
-        }
-
-        sliderThumbs.appendChild(clonedTemplate);
-      }
-    }
-  }
-
-  function createthumbsItemTemplate(sliderRootElement) {
-    const sliderThumbs = sliderRootElement.querySelector(".js-slider__thumbs");
-    const thumbsItemPrototype = sliderThumbs.cloneNode(true);
-    thumbsItemPrototype
-      .querySelector(".js-slider__thumbs-item--prototype")
-      .classList.remove("js-slider__thumbs-item--prototype");
-    const thumbsItemTemplate = thumbsItemPrototype.querySelector(
-      ".js-slider__thumbs-item"
-    );
-    return thumbsItemTemplate;
-  }
 };
 
 const onImageNext = function (event) {
@@ -224,7 +179,6 @@ const onClose = function (event) {
     sliderThumbs.removeChild(sliderThumbs.children[1]);
   }
 };
-// funkcja do dopracowania
 
 const slideStartStop = {
   intervalId: "",
@@ -246,4 +200,49 @@ function changeImgToCurrent(currentTarget, newCurrentImg) {
   newCurrentImg.classList.add("js-slider__thumbs-image--current");
   const imgNextPlace = currentTarget.querySelector(".js-slider__image");
   imgNextPlace.src = newCurrentImg.src;
+}
+
+function showZommedImg(event, sliderRootElement) {
+  const imgSrc = event.currentTarget.querySelector(`.gallery__image`).src;
+  const imgPlace = sliderRootElement.querySelector(".js-slider__image");
+  imgPlace.src = imgSrc;
+}
+
+function showSliderThumbsItems(event, sliderRootElement, imagesSelector) {
+  const sliderThumbs = sliderRootElement.querySelector(".js-slider__thumbs");
+  const thumbsItemTemplate = createthumbsItemTemplate(sliderRootElement);
+  const imgSrc = event.currentTarget.querySelector(`.gallery__image`).src;
+  const imgGroup = event.currentTarget.dataset.sliderGroupName;
+  const imagesList = Array.from(document.querySelectorAll(imagesSelector));
+
+  for (let ele of imagesList) {
+    if (ele.dataset.sliderGroupName === imgGroup) {
+      const clonedTemplate = thumbsItemTemplate.cloneNode(true);
+      const thumbsImage = clonedTemplate.querySelector(
+        ".js-slider__thumbs-image"
+      );
+      const eleImgSrc = ele
+        .querySelector(".gallery__image")
+        .getAttribute("src");
+      thumbsImage.src = eleImgSrc;
+
+      if (thumbsImage.src === imgSrc) {
+        thumbsImage.classList.add("js-slider__thumbs-image--current");
+      }
+
+      sliderThumbs.appendChild(clonedTemplate);
+    }
+  }
+}
+
+function createthumbsItemTemplate(sliderRootElement) {
+  const sliderThumbs = sliderRootElement.querySelector(".js-slider__thumbs");
+  const thumbsItemPrototype = sliderThumbs.cloneNode(true);
+  thumbsItemPrototype
+    .querySelector(".js-slider__thumbs-item--prototype")
+    .classList.remove("js-slider__thumbs-item--prototype");
+  const thumbsItemTemplate = thumbsItemPrototype.querySelector(
+    ".js-slider__thumbs-item"
+  );
+  return thumbsItemTemplate;
 }
