@@ -1,5 +1,5 @@
-![Image gallry in JS](./README-assets/task-js-events.png)
-# Image gallery in JS
+[![Image gallry in JS](./README-assets/task-js-events.png)](https://typee8.github.io/Image-gallery-in-JS/)
+# [Image gallery in JS](https://typee8.github.io/Image-gallery-in-JS/)
 
 It's the conclusion of **6th chapter** (there's **20**) of [devmentor.pl](https://devmentor.pl/mentoring-javascript) mentoring program.
 
