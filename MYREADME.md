@@ -1,29 +1,30 @@
+![Image gallry in JS](./README-assets/task-js-events.png)
 # Image gallery in JS
 
 It's the conclusion of **6th chapter** (there's **20**) of [devmentor.pl](https://devmentor.pl/mentoring-javascript) mentoring program.
 
 In this project I was asked to write new functionalities in JS:
 
-[1) click on an image to zoom in.](./README-assets/zoom-in.gif) //TUTAJ SKOŃCZYŁEM. Sprawdź czy link przekierowuje!
-2) show pictures from the same group below the clicked img.
-3) click on arrows to swipe pictures left/right.
-4) click on background to return to the gallery.
-5) if client swipes to the end of an img group start from the beginning/end.
-6) swipe pictures automatically just after click on desired img.
+[1) Click on an image to zoom in.](./README-assets/intro-zoom-in.gif)<br>
+[2) Show pictures from the same group below the picked img.](./README-assets/intro-pictures-group.png)<br>
+[3) Click on arrows to swipe pictures left/right.](./README-assets/intro-left-right-swipe.gif)<br>
+[4) Click on background to return to the gallery.](./README-assets/intro-zoom-out.gif)<br>
+[5) If the client swipes to the end of an image group, loop back to the beginning/end.](./README-assets/intro-from-the-start.gif)<br>
+[6) After clicking on a desired image, the automatic image swiping feature activates.](./README-assets/intro-auto-swipe.gif)
 
 There were certain conditions I needed to make:
-- HTML, CSS and some JS are ready. I should not change them.
-- Stick to already written convention.
+- HTML, CSS and part of JS are ready. I should not change them.
+- Stick to the already written convention.
 
-Here you can check pre-written JS | Here you can check my code!
+[Here you can check pre-written JS](./README-assets/pre-written%20code/assets/js/script.js) | [Here you can check my code!](./assets/js/script.js)
 
-To write these functionalities I had to work with custom events that had predetermined task:
+To implement the functionalities, I had to work with custom events with predefined tasks:
 
-`js-slider-img-click` - an event that is triggered when clicking on the image on the page (this is already done in the script.js file) and should display our slideshow
+`js-slider-img-click` - an event that is triggered when clicking on the image on the page (this is already done in the script.js file) and should display our slideshow.
 
-`js-slider-img-next` - an event triggered by clicking the right arrow on the page and should show the next image (if it exists) among those visible in the thumbnails
+`js-slider-img-next` - an event triggered by clicking the right arrow on the page and should show the next image (if it exists) among those visible in the thumbnails.
 
-`js-slider-img-prev` - similar to above, but for the left arrow
+`js-slider-img-prev` - similar to above, but for the left arrow.
 
 `js-slider-close` - an event triggered by clicking in the empty space around the displayed photo, i.e., in the .js-slider__zoom element (and only this element! Be careful with event propagation).
 
@@ -32,8 +33,8 @@ To write these functionalities I had to work with custom events that had predete
 ## Content:
 ##### [1) Challenges:](#1-challenges)
 
-[1. Event.target in custom events.](#eventtarget-in-custom-events)
-[2. Stop automatic image swipe - clearInterval().](#stop-automatic-image-swipe---clearinterval)
+[1. Event.target in custom events.](#eventtarget-in-custom-events)<br>
+[2. Stop automatic image swipe - clearInterval().](#stop-automatic-image-swipe---clearinterval)<br>
 [3. Write things down.](#write-things-down)
 
 ##### [2) Gained knowledge](#gained-knowledge)
@@ -42,29 +43,32 @@ To write these functionalities I had to work with custom events that had predete
 
 ### Event.target in custom events
 
-In this project I was constantly using custom events to get comfortable with them. Combining the events with regular events can lead to some confusion on what event.target actually is. In the project custom events where handled like this:
+In this project I was constantly using **custom events** to get comfortable with them. Combining the events with regular events can lead to some confusion on what `event.target` actually is. In the project custom events where handled like this:
 
 ![event-propagation](./README-assets/event-propagation.png)
 
-**:one:** clicking on the zoom element creates new event and dispatch it in `fireCustomEvent(element, name); `
+**:one:** clicking on the zoom element creates new event and dispatch it with `fireCustomEvent(element, name); `
 - `element:` is the place where the event has been dispatched.
 - `name:` is the name of the new event.
 
-**:two:** evokes onClose() as soon as specific element has been clicked to launch `js-slider-close` custom event.
+**:two:** evokes `onClose()` as soon as specific element has been clicked to launch `js-slider-close` custom event.
 
 **:three:** the function executes.
 
-While writing `onClose()` I noticed that `event.target` is not the element on which I was clicking (zoom) but the argument - `element` in `fireCustomEvent(element, name)`. If I'd change `element = e.currentTarget` to `element = sliderRootElement`, then in `onClose()` **`event.currentTarget === event.target === this`**. It's easy to mistake the actual value of `event.target` because of `click` event that triggers another event.
+While writing `onClose()`:
+
+- I thought that `event.target` is the element on which I clicked like in **:one:**.
+It was because in `fireCustomEvent(element, name)` the `element = e.currentTarget` which was the same as `e.target` of the 'click' event.
+- In `fireCustomEvent(element, name)`, if I'd change the "element" for `sliderRootElement`, then in the `onClose()` `event.target`, `event.currentTarget`, and `this` would all refer to the `sliderRootElement`.
+- `Event.target` represents the element on which the event was triggered.
 
 ---
 
 ### Stop automatic image swipe - clearInterval()
 
-5) Problems with stoping setInterval(); :
+I had to implement code that automatically swipes images at regular intervals.
 
-Miałem za zadanie napisać kod, który będzie przełączał obrazki co określony czas.
-
-Zaczynałem od funkcji:
+I've started with a function:
 
 ```
 const imageNextTimeline = function (e) {
@@ -74,19 +78,10 @@ const imageNextTimeline = function (e) {
 }
 ```
 
-- It was responsible for every 5s call of the function which was swiping images.
+*It triggers the event which calls the function that swipes images every 5 seconds.*
 
-To stop `setInterval()` I needed to create a variable because `setInterval()` returns it's id and then enables to use clearInterval() to stop it.
-
-```
-const imageNextTimeline = function (e) {
-  setInterval(() => {
-    fireCustomEvent(this, "js-slider-img-next");
-  }, 5000;
-}
-```
-
-but stopping setInterval() wasn't that easy. I was thinking how to do it and started playing with some conditionals like:
+To stop `setInterval()`, I needed to create a variable to store its ID, which I could then use with `clearInterval()` to stop the interval.
+I was trying to utilize the variable in different ways like playing with some conditionals:
 
 ```
 const imageNextTimeline = function (e) {
@@ -99,10 +94,7 @@ const imageNextTimeline = function (e) {
   }
 };
 ```
-
-but because of creating variable in different code blocks i couldn't access the timer.
-I tried different approach in which I'd use function undefined parameter `timer` so it's created outside of conditionals. But the function was destroing the parameter as soon as function was done. But the idea that the variable needs to be outside of conditionals was closer to the solution:
-
+Due to the creation of the variable in first code block, it was impossible to access the `timer` in the second one. I experimented with a different approach, attempting to use an undefined parameter `timer` so that it would be created outside of conditionals:
 ```
 const imageNextTimeline = function (e, timer) {
   if (this.getAttribute("class").includes("js-slider--active")) {
@@ -114,8 +106,9 @@ const imageNextTimeline = function (e, timer) {
   }
 };
 ```
+However, the parameter was being destroyed as soon as the function finished executing. Nonetheless, the concept that the variable needed to exist outside of conditionals brought me closer to the solution.
 
-I learned that I need to define global variable and then use these conditionals. I really didn't want to define it globally tho, because it's a bad practice, you can mess a lot of things with it. I've decided to create object and in the object define a variable which is acessible by functions responsible for starting and stoping the swiping. It looked like this:
+ I learned that I needed to define a global variable and then use it within those conditionals. I really didn't want to define it globally, though, because it's considered bad practice and it can lead to many issues. Instead, I decided to create an object and define a variable within it that is accessible by functions responsible for starting and stopping the swiping:
 
 ```
 const slideStartStop = {
@@ -130,6 +123,7 @@ const slideStartStop = {
   },
 };
 ```
+Now auto swiping can be turn on/off with just a right click.
 
 ---
 
@@ -147,7 +141,7 @@ It's a long way. Consistently naming parameters that accept the same inputs help
 // sliderRootElement = ".js-slider";
 // imagesSelector = ".gallery__item";
 ```
-at the end of the project I delete it so it won't create any confusion. It's only for me.
+At the end of the project I delete it so it won't create any confusion. It's only for me.
 
 I also use comments to organize my efforts and break down problems into more manageable chunks, for example:
 
@@ -177,4 +171,4 @@ Again, It's only for me. I don't leave it in the final project. It helps to gath
 :white_check_mark: Comprehension of `Event object`.<br>
 :white_check_mark: Usage of `setInterval()`.<br>
 :white_check_mark: Improve readability of functions - decomposition.<br>
-:white_check_mark: Keep code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+:white_check_mark: Keep the code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
